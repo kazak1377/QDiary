@@ -18,7 +18,8 @@
 #include <QFileDialog>
 #include <QtXml/QDomDocument>
 #include <QDomDocument>
-#include "xmlworker.h"
+#include "dbworker.h"
+#include "postwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,7 +29,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     QDateTime *curent;
-    void loadDiary();
+
     QSettings *generalSetting;
     void saveSettings();
     void loadSettings();
@@ -37,8 +38,9 @@ class MainWindow : public QMainWindow
     void setTable(QStringList date);
 	QStringList line;
     QStringList postList;
-    XmlWorker *core;
     void generatePostList(QString date);
+    dbworker *core;
+    postWindow *postAdd;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -51,6 +53,9 @@ private slots:
 	void postData();
     void saveDiary(QString data);
     void showTextByDate(int row, int);
+    void showPostWindow();
+    void appendPostToDb(QString post);
+    void loadDiary();
 };
 
 #endif // MAINWINDOW_H

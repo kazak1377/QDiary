@@ -8,12 +8,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	curent = new QDateTime();
 	qDebug()<< "\n\n\n=============================APP STARTED=========================";
 	qDebug()<<curent->currentDateTime().toString(Qt::ISODate);
+    core = new dbworker("mydb.sqlite");
+    postAdd = new postWindow();
 	this->setWindowTitle("QDiary-"+curent->currentDateTime().date().currentDate().toString(Qt::ISODate));
 	generalSetting = new QSettings("Settings",QSettings::IniFormat,this);
 	ui->setupUi(this);
 	connect(ui->prefButton,SIGNAL(clicked()),this,SLOT(showPref()));
+    connect(ui->newPostButton,SIGNAL(clicked()),this,SLOT(showPostWindow()));
 	path = new QUrl("diary.xml");
-
 
 
 	///table setting
@@ -31,11 +33,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	//load our program settings
 	loadSettings();
 	xmlDiary = new QFile(path->toString());
-	qDebug()<<xmlDiary->fileName();
-	core = new XmlWorker(xmlDiary);
 	///connect area
 	connect(ui->tableView,SIGNAL(cellClicked(int,int)),this,SLOT(showTextByDate(int,int)));
-	connect(core,SIGNAL(contentChanged(QString)),this,SLOT(saveDiary(QString)));
+    connect(postAdd,SIGNAL(addPostToDb(QString)),this,SLOT(appendPostToDb(QString)));
+    connect(postAdd,SIGNAL(postAdded()),this,SLOT(loadDiary()));
 	///connect area
 
 	//load diary data
@@ -45,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 void MainWindow::setTable(QStringList date)
 {
+    ui->tableView->clear();
+    ui->tableView->setRowCount(0);
 	for(int i=0;i<=date.count()-1;i++)
 	{
 		int lastRow = ui->tableView->rowCount();
@@ -54,11 +57,6 @@ void MainWindow::setTable(QStringList date)
 	}
 }
 
-void MainWindow::generatePostList(QString date)
-{
-	postList = core->getElementsFromString(core->getElemetsWithArgs("date",date),"time");
-}
-
 void MainWindow::postData()
 {
 
@@ -66,28 +64,23 @@ void MainWindow::postData()
 
 void MainWindow::showTextByDate(int row, int /*collumn*/)
 {
-	QStringList times;
-	times = core->getValuesByTagNameFromString("time",core->getElemetsWithArgs("date",ui->tableView->item(row,0)->text())[0]);
-	//postList.clear();
-	generatePostList(ui->tableView->item(row,0)->text());
-	QString postText = " ";
-	for(int i=0;i<=postList.count()-1;i++)
-	{
-		postText+="<hr>";
-		postText+="<h1>"+times[i]+"</h1>";
-		postText+="</br><br>";
-		postText+=postList[i];
-	}
-	ui->webView->setHtml(postText);
+    ui->webView->setHtml(core->getPostsByDate(ui->tableView->item(row,0)->text()));
+}
+
+void MainWindow::showPostWindow()    //show an new post window
+{
+    postAdd->show();    //postAdd is a class of new post window
+}
+
+void MainWindow::appendPostToDb(QString post)
+{
+    post.replace("\n","<br>");
+    core->addPost(curent->date().currentDate().toString(Qt::ISODate),curent->time().currentTime().toString(Qt::ISODate),post);
 }
 
 void MainWindow::loadDiary()
 {
-	setTable(core->getValuesByTagName("date"));
-	//    postList = core->getElementsByTagName("posttext");
-	qDebug()<<core->isBlockEmpty("date",curent->currentDateTime().date().currentDate().toString(Qt::ISODate));
-	// if(!core->isBlockExist("date",curent->currentDateTime().date().currentDate().toString(Qt::ISODate)))
-	// 	core->appendFirstLevelBlock("date",curent->currentDateTime().date().currentDate().toString(Qt::ISODate));
+    setTable(core->getDateList());
 }
 
 void MainWindow::saveSettings()

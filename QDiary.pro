@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui quick
+QT       += core gui quick sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets xml webkitwidgets
 
@@ -14,12 +14,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    xmlworker.cpp
+    dbworker.cpp \
+    postwindow.cpp
 
 HEADERS  += mainwindow.h \
-    xmlworker.h
+    dbworker.h \
+    postwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    postwindow.ui
 
-OTHER_FILES += \
-    pref.qml
+OTHER_FILES +=
