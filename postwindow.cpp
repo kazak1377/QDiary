@@ -1,6 +1,7 @@
 #include "postwindow.h"
 #include "ui_postwindow.h"
 #include "QDebug"
+#include <QMessageBox>
 
 postWindow::postWindow(QWidget *parent) : QWidget(parent), ui(new Ui::postWindow)
 {
