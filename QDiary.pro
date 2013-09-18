@@ -15,13 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     dbworker.cpp \
-    postwindow.cpp
+    postwindow.cpp \
+    prefwindow.cpp
 
 HEADERS  += mainwindow.h \
     dbworker.h \
-    postwindow.h
+    postwindow.h \
+    prefwindow.h
 
 FORMS    += mainwindow.ui \
-    postwindow.ui
+    postwindow.ui \
+    prefwindow.ui
 
 OTHER_FILES +=

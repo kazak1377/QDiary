@@ -31,7 +31,6 @@ void dbworker::addPost(QString date,QString time,QString postText)
 
 QStringList dbworker::getDateList()
 {
-    //qDebug()<<query->exec("SELECT * FROM posts");
     qDebug()<<query->exec("select date, count(*) from posts group by date having count(*) > 0");
     qDebug()<<query->lastError().text();
     QStringList dateList;
@@ -51,7 +50,6 @@ QString dbworker::getPostsByDate(QString date)
     textToDate = "";
     while (query->next())
     {
-        //qDebug()<<query->value(0).toString()<<query->value(1).toString()<<query->value(2).toString()<<query->value(3).toString();
         textToDate+="<h1>"+query->value(1).toString()+"</h1><br><br>"+query->value(3).toString()+"<br><hr>";
     }
     qDebug()<<textToDate;
